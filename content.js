@@ -292,19 +292,35 @@ body {
 /**
  * Prevent the page from swallowing events that block the user from
  * selecting text, right-clicking, or copying content.
- * We capture in the bubble phase with higher priority than page scripts.
+ * We listen in the capture phase so our handlers run before page scripts.
  */
+
+/** Events whose page-side handlers we suppress while ZEN mode is active. */
+const RESTRICTED_EVENTS = ['contextmenu', 'copy', 'cut', 'selectstart', 'dragstart'];
+
+/** Shared capture-phase handler: lets the event propagate uninhibited. */
+const allowEvent = (e) => e.stopImmediatePropagation();
+
+/** Options object reused for every add/remove call. */
+const EVENT_OPTS = { capture: true, passive: false };
+
+/** Whether the restrictive-event listeners are currently installed. */
+let restrictiveEventsOverridden = false;
+
 function overrideRestrictiveEvents() {
-  const opts = { capture: true, passive: false };
+  if (restrictiveEventsOverridden) return;
+  RESTRICTED_EVENTS.forEach((type) =>
+    document.addEventListener(type, allowEvent, EVENT_OPTS)
+  );
+  restrictiveEventsOverridden = true;
+}
 
-  const allow = (e) => e.stopImmediatePropagation();
-
-  document.addEventListener('contextmenu', allow, opts);
-  document.addEventListener('copy', allow, opts);
-  document.addEventListener('cut', allow, opts);
-  document.addEventListener('selectstart', allow, opts);
-  document.addEventListener('dragstart', allow, opts);
-  document.addEventListener('mousedown', allow, opts);
+function restoreRestrictiveEvents() {
+  if (!restrictiveEventsOverridden) return;
+  RESTRICTED_EVENTS.forEach((type) =>
+    document.removeEventListener(type, allowEvent, EVENT_OPTS)
+  );
+  restrictiveEventsOverridden = false;
 }
 
 /**
@@ -348,23 +364,19 @@ function removeStyles() {
   if (existing) existing.remove();
 }
 
-let restrictiveEventsOverridden = false;
-
 /** Activate ZEN mode. */
 function enableZenMode() {
   injectStyles();
-  if (!restrictiveEventsOverridden) {
-    overrideRestrictiveEvents();
-    restrictiveEventsOverridden = true;
-  }
+  overrideRestrictiveEvents();
   // Run on current DOM, then watch for dynamic content additions.
   unstickElements();
   observeDynamicContent();
 }
 
-/** Deactivate ZEN mode (stylesheet removed; event overrides can stay, they are harmless). */
+/** Deactivate ZEN mode – fully reverts all behavioural changes. */
 function disableZenMode() {
   removeStyles();
+  restoreRestrictiveEvents();
   stopObserver();
 }
 
