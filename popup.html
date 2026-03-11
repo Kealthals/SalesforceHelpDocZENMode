@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salesforce Help Doc ZEN Mode</title>
+  <style>
+    /* ── Reset ────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Root ────────────────────────────────────────── */
+    body {
+      width: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                   'Helvetica Neue', Arial, sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    /* ── Header ──────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 12px;
+      background: linear-gradient(135deg, #032d60 0%, #0070d2 100%);
+      color: #fff;
+    }
+
+    .header__icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .header__title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .header__subtitle {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    /* ── Main row ─────────────────────────────────────── */
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .row__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .row__desc {
+      font-size: 11px;
+      color: #706e6b;
+      margin-top: 2px;
+    }
+
+    /* ── Toggle switch ────────────────────────────────── */
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle__track {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: #dddbda;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle__track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      transition: transform 0.2s ease;
+    }
+
+    .toggle input:checked + .toggle__track {
+      background: #0070d2;
+    }
+
+    .toggle input:checked + .toggle__track::after {
+      transform: translateX(20px);
+    }
+
+    .toggle input:focus-visible + .toggle__track {
+      outline: 2px solid #0070d2;
+      outline-offset: 2px;
+    }
+
+    /* ── Status badge ─────────────────────────────────── */
+    .status {
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #706e6b;
+    }
+
+    .status__badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status__badge--on  { background: #e3f3ff; color: #0070d2; }
+    .status__badge--off { background: #f3f2f2; color: #706e6b; }
+
+    /* ── Feature list ─────────────────────────────────── */
+    .features {
+      padding: 12px 16px;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .features__title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #706e6b;
+      margin-bottom: 8px;
+    }
+
+    .features__list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .features__item {
+      font-size: 12px;
+      color: #444;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .features__item::before {
+      content: '✓';
+      font-size: 11px;
+      color: #0070d2;
+      font-weight: 700;
+    }
+
+    /* ── Footer ───────────────────────────────────────── */
+    .footer {
+      padding: 8px 16px 10px;
+      font-size: 10px;
+      color: #aaa;
+      text-align: center;
+      border-top: 1px solid #e5e5e5;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <!-- inline SVG lightning-bolt icon – no external files needed -->
+    <svg class="header__icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="28" height="28" rx="6" fill="rgba(255,255,255,0.15)"/>
+      <path d="M16 4L8 16h7l-3 8 11-13h-7l3-7z" fill="#fff"/>
+    </svg>
+    <div>
+      <div class="header__title">Salesforce Help Doc ZEN Mode</div>
+      <div class="header__subtitle">Distraction-free documentation reading</div>
+    </div>
+  </header>
+
+  <div class="row">
+    <div>
+      <div class="row__label">ZEN Mode</div>
+      <div class="row__desc">Improves layout, typography &amp; events</div>
+    </div>
+    <label class="toggle" aria-label="Toggle ZEN Mode">
+      <input type="checkbox" id="zenToggle" />
+      <span class="toggle__track"></span>
+    </label>
+  </div>
+
+  <div class="status">
+    Status: <span class="status__badge status__badge--off" id="statusBadge">Off</span>
+  </div>
+
+  <div class="features">
+    <div class="features__title">What ZEN Mode does</div>
+    <ul class="features__list">
+      <li class="features__item">Hides sidebars, navbars &amp; banners</li>
+      <li class="features__item">Widens the main content column</li>
+      <li class="features__item">Enlarges font &amp; increases line spacing</li>
+      <li class="features__item">Improves code-block readability</li>
+      <li class="features__item">Removes sticky / fixed elements</li>
+      <li class="features__item">Allows free text selection &amp; copy</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Works on help.salesforce.com · developer.salesforce.com · trailhead.salesforce.com
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
