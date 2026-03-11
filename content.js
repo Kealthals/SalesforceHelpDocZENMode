@@ -338,14 +338,48 @@ const STICKY_CANDIDATES =
  * Convert any sticky or fixed elements matching STICKY_CANDIDATES to
  * `position:static`.  This is done with JS because CSS cannot select
  * elements by their *computed* position value.
+ * Original inline `position` and `top` values are saved in `dataset` so
+ * `restoreStuckElements()` can fully reverse the change when ZEN mode is
+ * toggled off.
  */
 function unstickElements() {
   document.querySelectorAll(STICKY_CANDIDATES).forEach((el) => {
     const pos = window.getComputedStyle(el).position;
     if (pos === 'sticky' || pos === '-webkit-sticky' || pos === 'fixed') {
+      // Persist original inline values (empty string if not set) so we can
+      // restore them precisely when ZEN mode is disabled.
+      if (!el.dataset.zenOrigPosition) {
+        el.dataset.zenOrigPosition = el.style.getPropertyValue('position') ?? '';
+        el.dataset.zenOrigTop = el.style.getPropertyValue('top') ?? '';
+      }
       el.style.setProperty('position', 'static', 'important');
       el.style.setProperty('top', 'unset', 'important');
     }
+  });
+}
+
+/**
+ * Reverse the inline style overrides applied by `unstickElements()`.
+ * Restores the element's original inline `position` and `top` and removes
+ * the tracking dataset attributes.
+ */
+function restoreStuckElements() {
+  document.querySelectorAll(STICKY_CANDIDATES).forEach((el) => {
+    if (!('zenOrigPosition' in el.dataset)) return;
+    const origPosition = el.dataset.zenOrigPosition;
+    const origTop = el.dataset.zenOrigTop;
+    if (origPosition) {
+      el.style.setProperty('position', origPosition);
+    } else {
+      el.style.removeProperty('position');
+    }
+    if (origTop) {
+      el.style.setProperty('top', origTop);
+    } else {
+      el.style.removeProperty('top');
+    }
+    delete el.dataset.zenOrigPosition;
+    delete el.dataset.zenOrigTop;
   });
 }
 
@@ -377,6 +411,7 @@ function enableZenMode() {
 function disableZenMode() {
   removeStyles();
   restoreRestrictiveEvents();
+  restoreStuckElements();
   stopObserver();
 }
 
