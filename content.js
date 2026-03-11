@@ -385,25 +385,40 @@ function disableZenMode() {
 let observer = null;
 
 /**
+ * rAF handle used to coalesce multiple rapid mutations into a single
+ * `unstickElements()` call per animation frame.
+ */
+let unstickRafId = null;
+
+/**
  * Watch for dynamically injected nodes (e.g. chat widgets, cookie banners
  * loaded asynchronously) and un-stick them as they arrive.
+ * `unstickElements()` is throttled to at most once per animation frame so
+ * that bursts of DOM mutations on SPA-like pages don't trigger repeated
+ * expensive `querySelectorAll` + `getComputedStyle` passes.
  */
 function observeDynamicContent() {
   if (observer) return;
   observer = new MutationObserver((mutations) => {
-    let needsUnstick = false;
+    if (unstickRafId !== null) return; // already scheduled for this frame
     for (const mutation of mutations) {
       if (mutation.addedNodes.length > 0) {
-        needsUnstick = true;
+        unstickRafId = requestAnimationFrame(() => {
+          unstickRafId = null;
+          unstickElements();
+        });
         break;
       }
     }
-    if (needsUnstick) unstickElements();
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 }
 
 function stopObserver() {
+  if (unstickRafId !== null) {
+    cancelAnimationFrame(unstickRafId);
+    unstickRafId = null;
+  }
   if (observer) {
     observer.disconnect();
     observer = null;
