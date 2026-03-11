@@ -29,7 +29,7 @@ distraction-free reading experience.
 2. Open Chrome and navigate to `chrome://extensions`.
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the repository folder.
-5. Visit any page on `help.salesforce.com` or `developer.salesforce.com`.
+5. Visit any page on `help.salesforce.com`, `developer.salesforce.com`, or `trailhead.salesforce.com`.
 
 ### Usage
 
