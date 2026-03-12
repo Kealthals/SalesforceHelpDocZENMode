@@ -5,6 +5,11 @@
   const BLOCKED_EVENTS = new Set(['scroll', 'wheel', 'mousewheel', 'touchmove']);
   const INLINE_HANDLER_ATTRIBUTES = ['onscroll', 'onwheel', 'onmousewheel', 'ontouchmove'];
 
+  // Add class names here to allow scroll-related events on matching elements.
+  const SCROLL_EXEMPT_CLASSES = new Set([
+    // e.g. 'custom-scrollable', 'code-block'
+  ]);
+
   const nativeAddEventListener = EventTarget.prototype.addEventListener;
   const nativeSetAttribute = Element.prototype.setAttribute;
 
@@ -14,6 +19,15 @@
 
   function shouldBlockEventType(type) {
     return BLOCKED_EVENTS.has(normalizeEventType(type));
+  }
+
+  function isScrollExemptTarget(target) {
+    if (SCROLL_EXEMPT_CLASSES.size === 0) return false;
+    if (!target || typeof target.classList === 'undefined') return false;
+    for (const cls of SCROLL_EXEMPT_CLASSES) {
+      if (target.classList.contains(cls)) return true;
+    }
+    return false;
   }
 
   function isInlineBlockedAttribute(name) {
@@ -33,7 +47,7 @@
   }
 
   EventTarget.prototype.addEventListener = function (type, listener, options) {
-    if (shouldBlockEventType(type)) {
+    if (shouldBlockEventType(type) && !isScrollExemptTarget(this)) {
       return;
     }
     return nativeAddEventListener.call(this, type, listener, options);
