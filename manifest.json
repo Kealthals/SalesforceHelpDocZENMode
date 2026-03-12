@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Salesforce Help Doc ZEN Mode",
-  "description": "Distraction-free reading mode for Salesforce help and developer documentation sites.",
+  "description": "Layout cleanup and scroll-override blocking for Salesforce Help article pages.",
   "version": "1.0.0",
   "permissions": ["storage"],
   "icons": {
