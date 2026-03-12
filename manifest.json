@@ -20,13 +20,15 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://help.salesforce.com/*",
-        "*://developer.salesforce.com/*",
-        "*://trailhead.salesforce.com/*"
-      ],
+      "matches": ["https://help.salesforce.com/s/articleView*"],
       "js": ["content.js"],
       "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["page-inject.js"],
+      "matches": ["https://help.salesforce.com/s/articleView*"]
     }
   ],
   "background": {
